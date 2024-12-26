@@ -82,19 +82,19 @@ def catalog_notes(midi):
     for track in midi.tracks:
         abs_time = 0
         for msg in track:
-            abs_time += mido.tick2second(msg.time, midi.ticks_per_beat, tempo)
+            abs_time += round(mido.tick2second(msg.time, midi.ticks_per_beat, tempo) * 20)
 
             if msg.type == "set_tempo":
                 tempo = msg.tempo
             elif msg.type == "note_on":
                 notes_on.append(
                     (
-                        round(abs_time * 20),
+                        abs_time,
                         (msg.note - 54) % (78 - 54) if msg.note != 78 else 78 - 54,
                     )
                 )
             elif msg.type == "end_of_track":
-                end = round(abs_time * 20)
+                end = abs_time
     return tuple(notes_on), end
 
 
