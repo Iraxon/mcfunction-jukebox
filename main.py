@@ -20,6 +20,14 @@ def right_clicks_to_factor(rc):
 
     return 2 ** ((rc - 12) / 12)  # Formula from minecraft.wiki
 
+def seconds_to_mc_ticks(s):
+    """
+    Converts from seconds to
+    MC ticks
+    """
+
+    # Ticks must be integers, hence rounding
+    return round(s * 20)
 
 def pre_boilerplate(name, edition):
     """
@@ -44,7 +52,7 @@ def post_boilerplate(name, next_tick):
         f"scoreboard players add @s MCFJ.Tick.{name} 1"
         "\n"
         f"execute as @a[tag=MCFJ.{name}] at @s "
-        f"if score @s MCFJ.Tick.{name} matches {next_tick}.. "
+        f"if score @s MCFJ.Tick.{name} matches {seconds_to_mc_ticks(next_tick)}.. "
         f"run scoreboard players reset @s MCFJ.Tick.{name}"
         "\n"
         f"execute as @a[tag=!MCFJ.{name}] at @s run "
@@ -82,7 +90,7 @@ def catalog_notes(midi):
     for track in midi.tracks:
         abs_time = 0
         for msg in track:
-            abs_time += round(mido.tick2second(msg.time, midi.ticks_per_beat, tempo) * 20)
+            abs_time += mido.tick2second(msg.time, midi.ticks_per_beat, tempo)
 
             if msg.type == "set_tempo":
                 tempo = msg.tempo
@@ -117,7 +125,7 @@ def midi_to_mcfunction(src, edition=Edition.JAVA):
             tuple(
                 f"execute as @a at @s if entity @s[tag=MCFJ.{TITLE}] "
                 f"if score @s MCFJ.Tick.{TITLE} "
-                f"matches {note[0]} "
+                f"matches {seconds_to_mc_ticks(note[0])} "
                 f"run playsound "
                 f"{ {Edition.JAVA: JAVA_SOUND, Edition.BEDROCK: BK_SOUND}[edition] } "
                 f"{ {Edition.JAVA: 'voice ', Edition.BEDROCK: ''}[edition] }"
