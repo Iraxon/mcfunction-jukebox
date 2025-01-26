@@ -1,8 +1,8 @@
 import enum
-import mido
+import mido #type: ignore
 from tkinter import Tk, filedialog
 import os
-import pyperclip
+import pyperclip #type: ignore
 
 
 class Edition(enum.Enum):
